@@ -1,0 +1,12 @@
+# Table of contents
+# Learn more at https://jupyterbook.org/customize/toc.html
+
+format: jb-book
+root: about
+chapters:
+- file: 01_BayesIntro
+- file: 02_DocumentingBayes
+- file: 03_HierarchicalStormwater
+- file: 04_Lead210_Master
+- file: logo_asymmetric_laplace
+- file: experience

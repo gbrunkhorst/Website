@@ -1,0 +1,11 @@
+Location_ID,Date,Matrix,Upper_Depth,Lower_Depth,Depth_Unit,Chemical,Concentration,Result_Unit
+PSAMP_LT-3,4/20/2000,Sediment Surface,0,3,cm,Benzo(a)pyrene,45,ug/Kg
+PSAMP_LT-3,4/22/2005,Sediment Surface,0,3,cm,Benzo(a)pyrene,20,ug/Kg
+PSAMP_LT-3,4/22/2005,Sediment Surface,0,3,cm,Benzo(a)pyrene,21,ug/Kg
+PSAMP_LT-3,4/22/2005,Sediment Surface,0,3,cm,Benzo(a)pyrene,19,ug/Kg
+PSAMP_LT-3,4/25/2010,Sediment Surface,0,3,cm,Benzo(a)pyrene,9.84,ug/Kg
+PSAMP_LT-3,4/25/2010,Sediment Surface,0,3,cm,Benzo(a)pyrene,10.1,ug/Kg
+PSAMP_LT-3,4/25/2010,Sediment Surface,0,3,cm,Benzo(a)pyrene,12.3,ug/Kg
+PSAMP_LT-3,4/28/2016,Sediment Surface,0,3,cm,Benzo(a)pyrene,9.16,ug/Kg
+PSAMP_LT-3,4/28/2016,Sediment Surface,0,3,cm,Benzo(a)pyrene,6.62,ug/Kg
+PSAMP_LT-3,4/28/2016,Sediment Surface,0,3,cm,Benzo(a)pyrene,10.5,ug/Kg
