@@ -40,7 +40,10 @@ import arviz as az
 pd.set_option('display.colheader_justify', 'center')
 
 # data
-data = pd.read_excel('data/lavelle_lead210_clean_2022-10-17.xlsx')
+folder = 'https://raw.githubusercontent.com/gbrunkhorst/Website/main/data/'
+# folder = 'data/'
+file = 'lavelle_lead210_clean_2022-10-17.csv'
+data = pd.read_csv(folder+file)
 cols = data.columns[1:]
 for col in cols:
     data[col] = pd.to_numeric(data[col], errors='coerce')
@@ -382,6 +385,8 @@ model
 # In[11]:
 
 
+# If graphviz is not installed, and you want the graph visual, uncomment and run the conda install
+# !conda install -c conda-forge python-graphviz -y
 pm.model_to_graphviz(model)
 
 

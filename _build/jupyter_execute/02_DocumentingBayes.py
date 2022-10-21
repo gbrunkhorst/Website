@@ -85,7 +85,15 @@ import pymc as pm
 import arviz as az
 pd.set_option('display.colheader_justify', 'center')
 
-data = pd.read_csv('data/Straight_Georgia_BaP_PSAMP_Data.csv')
+folder = 'https://raw.githubusercontent.com/gbrunkhorst/Website/main/data/'
+file = 'Straight_Georgia_BaP_PSAMP_Data.csv'
+data = pd.read_csv(folder + file)
+data
+
+
+# In[2]:
+
+
 data.Date = pd.to_datetime(data.Date)
 data['Year'] = data.Date.dt.year.astype(int)
 data.Year = data.Year - data.Year.min()
@@ -153,7 +161,7 @@ ax.set_title('BaP in Surface Sediment 2000-2016\nStation 3, Straight of Georgia,
 # ### Likelihood Function for Output Variable $C_t$
 # The likelihood function represents the error (i.e., noise or spread) of the measured $C_t$ around the SEDCAM prediction for $C_t$.  
 
-# In[2]:
+# In[3]:
 
 
 def sedcam(Cd, C0, R, t, B):
@@ -210,7 +218,7 @@ ax.legend(loc='center left', bbox_to_anchor=(1,.5));
 # ### Complete Model Specification
 # The complete model specification in Pymc is as follows: 
 
-# In[3]:
+# In[4]:
 
 
 with pm.Model() as sedcam_bayes:
@@ -235,9 +243,11 @@ sedcam_bayes
 
 # Pymc provides a graphical representation of the model as well.    
 
-# In[4]:
+# In[5]:
 
 
+# If graphviz is not installed, and you want the graph visual, uncomment and run the conda install
+# !conda install -c conda-forge python-graphviz -y
 pm.model_to_graphviz(sedcam_bayes)
 
 
@@ -245,7 +255,7 @@ pm.model_to_graphviz(sedcam_bayes)
 
 # Fit the model.
 
-# In[5]:
+# In[6]:
 
 
 with sedcam_bayes:
@@ -257,7 +267,7 @@ with sedcam_bayes:
 # ### Posterior
 # The posterior results are the meat of the analysis.  Let's plot 50 samples from the posterior distribution to get an idea of the spread of results.  
 
-# In[6]:
+# In[7]:
 
 
 def sedcam(Cd, C0, R, t, B):
@@ -284,7 +294,7 @@ ax.set_title('Posterior Samples');
 
 # The range of predictions is reasonable based on the data.  We can see how the predictions become less certain the further we extrapolate into the future, as we go beyond the observed data.  Now we will look at the probability distributions for each of the parameters.  
 
-# In[7]:
+# In[8]:
 
 
 labels = ['C0 - initial concentration (ug/kg)',
@@ -310,7 +320,7 @@ plt.tight_layout();
 # 
 # Here is the same information in tabular form: 
 
-# In[8]:
+# In[9]:
 
 
 az.summary(trace, hdi_prob=.9, var_names=var_names).iloc[:, :4].rename(index=dict(zip(var_names, labels))).round(1)
@@ -318,7 +328,7 @@ az.summary(trace, hdi_prob=.9, var_names=var_names).iloc[:, :4].rename(index=dic
 
 # It is also worth noting that the posterior distributions are correlated.  Logically, we know this should be true.  For example, suppose we have a large rate of decline in concentration.  A really low depositing concentration $C_d$ could achieve this, and it would not require a large deposition rate $R$.  In contrast, a higher $C_d$ would need a larger deposition rate $R$ to get the same rate of decline.  So our reasoning tells us that $C_d$ and $R$ are positively correlated.  Let's see if the Bayesian analysis figured that out:       
 
-# In[9]:
+# In[10]:
 
 
 az.plot_pair(trace, var_names=['Cd', 'R'], marginals=True, 
@@ -333,7 +343,7 @@ plt.suptitle('Joint Posterior Distribution Plots for $C_d$ and $R$');
 
 # Posterior predictive sample at year 30.  
 
-# In[10]:
+# In[11]:
 
 
 # set year to 30
@@ -343,7 +353,7 @@ with sedcam_bayes:
     post_pred_30 = pm.sample_posterior_predictive(trace)
 
 
-# In[11]:
+# In[12]:
 
 
 fig, axes = plt.subplots(2,1,figsize=(4,3))
@@ -379,7 +389,7 @@ plt.tight_layout();
 # 
 # Because there is some degree of randomness in the MCMC algorithm, Pymc will will run it multiple times so that we can check that we are getting the same results each time (i.e., for each chain). The trace plot plots the chains separately so we can see if they line up.      
 
-# In[12]:
+# In[13]:
 
 
 az.plot_trace(trace, var_names=var_names, figsize=(8,6))
@@ -395,7 +405,7 @@ plt.tight_layout();
 
 # Convergence metrics are also provided by the Arviz package.  `r_hat` measures the convergence and should generally be 1.01 or below, according to rule of thumb.     
 
-# In[13]:
+# In[14]:
 
 
 az.summary(trace, hdi_prob=.9, var_names=var_names)[['r_hat']].round(2)
@@ -408,7 +418,7 @@ az.summary(trace, hdi_prob=.9, var_names=var_names)[['r_hat']].round(2)
 # 
 # The tail of the distributions take longer to characterize than the center of the distributions, because the sampler will hang out less in the tail than in the center.  Therefore, Arviz provides values for ESS in the entire distribution (bulk) and in the tails only (based on the 5th and 95th percentiles).  
 
-# In[14]:
+# In[15]:
 
 
 az.summary(trace, hdi_prob=.9, var_names=var_names)[['ess_bulk', 'ess_tail']]
@@ -425,7 +435,7 @@ az.summary(trace, hdi_prob=.9, var_names=var_names)[['ess_bulk', 'ess_tail']]
 # 
 # In the following figure, I'll plot 50 samples from the prior predictive check and 50 samples from the posterior to compare.  
 
-# In[15]:
+# In[16]:
 
 
 Cd0 = prior.prior['Cd'].values.flatten()
@@ -453,7 +463,7 @@ ax.set_title('Prior Predictive Check\nComparison of Prior and Posterior');
 # ### Posterior Predictive Checks
 # Another benefit of Bayesian modelling is that the fit model can be used to generate synthetic datasets, which can be  visually compared to the observed dataset to see if the characteristics are similar.  The following plot show several draws from the posterior predictive sample.  
 
-# In[16]:
+# In[17]:
 
 
 fig, axes = plt.subplots(2,4,figsize=(13,5))
@@ -485,7 +495,7 @@ plt.tight_layout();
 # 
 # To check the likelihood shape, we will plot the observed data and the posterior predictive samples as residual errors against the mean model predictions.  
 
-# In[17]:
+# In[18]:
 
 
 mean_pred =  sedcam(Cd.mean(), C0.mean(), R.mean(), data.Year, B.mean())
@@ -524,7 +534,7 @@ plt.tight_layout();
 # ### Informative Priors
 # The prior predictive check showed that the prior distributions resulted in concentrations that were much higher than the observed data.  If we have prior reason to believe that concentrations are declining, we can use informative priors with higher concentrations for $C_d$ compared to $C_0$, and establish both of them closer to the expected concentrations.      
 
-# In[18]:
+# In[19]:
 
 
 with pm.Model() as sedcam_bayes:
@@ -547,7 +557,7 @@ with pm.Model() as sedcam_bayes:
 sedcam_bayes
 
 
-# In[19]:
+# In[20]:
 
 
 with sedcam_bayes:
@@ -555,7 +565,7 @@ with sedcam_bayes:
     trace_informative = pm.sample(target_accept=.9)
 
 
-# In[20]:
+# In[21]:
 
 
 ts = np.linspace(0,30,100)
@@ -584,7 +594,7 @@ ax.set_title('Prior Predictive Check\nComparison of Prior and Posterior');
 
 # Informative priors are closer to the observed trend and are less biased than the weakly informative priors.  Now, let's compare posteriors:   
 
-# In[21]:
+# In[22]:
 
 
 labels = ['C0 - initial concentration (ug/kg)',
@@ -608,7 +618,7 @@ pd.concat([weakly_informative, informative, pct_change], axis=1).round(1)
 
 # The Bayesian community also has well-established methods for comparing model by using cross-validation.  For illustrative purposes, I'll compare the SEDCAM model to a linear model with weakly informative priors.   
 
-# In[22]:
+# In[23]:
 
 
 with pm.Model() as linear_model:
@@ -629,13 +639,13 @@ with pm.Model() as linear_model:
 linear_model
 
 
-# In[23]:
+# In[24]:
 
 
 pm.model_to_graphviz(linear_model)
 
 
-# In[24]:
+# In[25]:
 
 
 with linear_model:
@@ -643,7 +653,7 @@ with linear_model:
     trace_linear = pm.sample(target_accept=.9)
 
 
-# In[25]:
+# In[26]:
 
 
 slope = trace_linear.posterior['slope'].values.flatten()
@@ -665,7 +675,7 @@ ax.set_title('Posterior Samples');
 # 
 # `az.compare` implements leave-one-out cross validation for the models, then ranks them in order of best performing to worst performing.
 
-# In[26]:
+# In[27]:
 
 
 compare = az.compare({'SEDCAM':trace, 'Linear':trace_linear})

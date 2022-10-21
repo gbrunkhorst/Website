@@ -48,8 +48,10 @@ def percentile(n):
         return np.percentile(x, n)
     percentile_.__name__ = ' %s Percentile' % n
     return percentile_
-
-data = pd.read_excel('data/nitrate_nitrite_stormwater.xlsx')
+folder = 'https://raw.githubusercontent.com/gbrunkhorst/Website/main/data/'
+# folder = 'data/'
+file = 'nitrate_nitrite_stormwater.csv'
+data = pd.read_csv(folder+file)
 data['Detect'] = data.Detect_Y_N.replace({'Y':True, 'N':False})
 areas = data.Area.unique()
 areas.sort()
@@ -437,6 +439,8 @@ hierarchical_stormwater_nitrate
 # In[13]:
 
 
+# If graphviz is not installed, and you want the graph visual, uncomment and run the conda install
+# !conda install -c conda-forge python-graphviz -y
 pm.model_to_graphviz(hierarchical_stormwater_nitrate)
 
 
